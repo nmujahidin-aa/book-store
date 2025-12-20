@@ -1,9 +1,12 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class AuthRepository {
   final FirebaseAuth _firebaseAuth;
+  final FirebaseFirestore _firestore;
 
-  AuthRepository(this._firebaseAuth);
+
+  AuthRepository(this._firebaseAuth, this._firestore);
 
   Future<void> login({
     required String email,
@@ -20,17 +23,23 @@ class AuthRepository {
   }
 
   Future<void> register({
+    required String name,
     required String email,
     required String password,
   }) async {
-    try {
-      await _firebaseAuth.createUserWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
-    } on FirebaseAuthException catch (e) {
-      throw _mapFirebaseError(e);
-    }
+    final cred = await _firebaseAuth.createUserWithEmailAndPassword(
+      email: email,
+      password: password,
+    );
+
+    final uid = cred.user!.uid;
+
+    await _firestore.collection('users').doc(uid).set({
+      'uid': uid,
+      'name': name,
+      'email': email,
+      'createdAt': FieldValue.serverTimestamp(),
+    });
   }
 
   Future<void> logout() async {

@@ -1,3 +1,4 @@
+import 'package:book_store/core/utils/password_validator.dart';
 import 'package:book_store/core/utils/snackbar_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -13,6 +14,7 @@ class RegisterPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final emailC = TextEditingController();
     final passC = TextEditingController();
+    final nameC = TextEditingController();
 
     ref.listen<AsyncValue<AuthState>>(
       authProvider,
@@ -110,6 +112,18 @@ class RegisterPage extends ConsumerWidget {
                     ),
 
                     const SizedBox(height: 32),
+                    TextField(
+                      controller: nameC,
+                      decoration: InputDecoration(
+                        labelText: "Nama Lengkap",
+                        prefixIcon: const Icon(Icons.person_outline),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(height: 16),
 
                     TextField(
                       controller: emailC,
@@ -145,9 +159,19 @@ class RegisterPage extends ConsumerWidget {
                         onPressed: authAsync.isLoading
                             ? null
                             : () {
+                              final passwordError = validatePassword(passC.text);
+                                if (passwordError != null) {
+                                  showErrorSnackBar(context, passwordError);
+                                  return;
+                                }
+                                
                                 ref
                                   .read(authProvider.notifier)
-                                  .register(emailC.text, passC.text);
+                                  .register(
+                                    nameC.text.trim(),
+                                    emailC.text.trim(),
+                                    passC.text.trim(),
+                                  );
                               },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xFF4F46E5),

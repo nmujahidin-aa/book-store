@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'features/auth/provider/auth_provider.dart';
 import 'features/auth/presentation/login_page.dart';
-import 'features/home/home_page.dart';
+import 'features/home/presentation/home_page.dart';
 
 class MyApp extends StatelessWidget {
   @override

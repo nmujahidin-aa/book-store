@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -5,7 +6,10 @@ import '../data/auth_repository.dart';
 import 'auth_state.dart';
 
 final authRepositoryProvider = Provider<AuthRepository>((ref) {
-  return AuthRepository(FirebaseAuth.instance);
+  return AuthRepository(
+    FirebaseAuth.instance,
+    FirebaseFirestore.instance,
+  );
 });
 
 final authProvider = AsyncNotifierProvider<AuthNotifier, AuthState>(
@@ -41,11 +45,20 @@ class AuthNotifier extends AsyncNotifier<AuthState> {
     }
   }
 
-  Future<void> register(String email, String password) async {
+  Future<void> register(
+    String name,
+    String email,
+    String password,
+  ) async {
     state = const AsyncLoading();
 
     try {
-      await _repository.register(email: email, password: password);
+      await _repository.register(
+        name: name,
+        email: email,
+        password: password,
+      );
+
       state = const AsyncData(
         AuthState(justRegistered: true),
       );
