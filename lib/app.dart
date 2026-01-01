@@ -1,37 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'features/auth/provider/auth_provider.dart';
-import 'features/auth/presentation/login_page.dart';
-import 'features/home/presentation/home_page.dart';
+import 'core/router/app_router.dart';
+import 'core/theme/app_theme.dart';
 
-class MyApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Book Store',
-      home: const AuthGate(),
-    );
-  }
-}
-
-class AuthGate extends ConsumerWidget {
-  const AuthGate({super.key});
+class App extends ConsumerWidget {
+  const App({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final authAsync = ref.watch(authProvider);
+    final router = ref.watch(appRouterProvider);
 
-    return authAsync.when(
-      loading: () => const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
-      ),
-      data: (state) {
-        if (state.isAuthenticated) {
-          return const HomePage();
-        }
-        return const LoginPage();
-      },
-      error: (_, __) => const LoginPage(),
+    return MaterialApp.router(
+      debugShowCheckedModeBanner: false,
+      theme: AppTheme.light(),
+      routerConfig: router,
     );
   }
 }
